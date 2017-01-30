@@ -1,3 +1,6 @@
+' http://blog.sina.com.cn/s/blog_670b6d8801015lnt.html
+' http://www.w3school.com.cn/vbscript/vbscript_ref_functions.asp#date
+
 Dim currApp, currAppName
 
 currAppName = Left(WScript.ScriptName, InStr(WScript.ScriptName, ".") - 1)
