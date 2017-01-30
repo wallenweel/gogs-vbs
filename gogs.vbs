@@ -1,72 +1,61 @@
-' http://blog.sina.com.cn/s/blog_670b6d8801015lnt.html
-' http://www.w3school.com.cn/vbscript/vbscript_ref_functions.asp#date
+Dim appName, postFix
 
-Dim currApp, currAppName
+' Custom app Name
+appName = ""
 
-currAppName = Left(WScript.ScriptName, InStr(WScript.ScriptName, ".") - 1)
-currApp = currAppName & ".exe"
+' Custom app postfix
+postFix = ".exe"
 
-' Entry of this App
-Main(currApp)
+' Call main sub
+Main
 
-Public Sub Main(ByVal sAppName)
-    Dim fso, CurDir
-    Set fso = CreateObject("Scripting.Filesystemobject")
-    CurDir = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
+' Main
+Sub Main()
+    Dim wim, wso, fso
+    Dim xName, xPath, xCmd, xSql
+    Dim currDir:currDir = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
 
-    ' Check app's process
-    If RuningCount(sAppName, "") > 0 Then
-        
-        ' Check whether has log file
-        If Not fso.FileExists(CurDir & "LOG.TXT") Then
-        
-            ' Kill app's process
-            ' Call CloseProcess(sAppName, "")
-            
-            ' Notice message
-            MsgBox currApp, 0, Time
-        End If
+    xName = scriptName(appName, postFix)
+    xPath = currDir & xName
+    xSql = processSQL(xName, xPath)
     
-    Else
+    Set wim = GetObject("winmgmts:")
+    Set wso = CreateObject("WScript.Shell")
+    Set fso = CreateObject("Scripting.filesystemobject")
 
-        ' Notice message
-        MsgBox currApp, 4, Time
-        
+    If Not fso.fileExists(xPath) Then
+        MsgBox "No App: [" & xName & "], Will Exit!"
+    Else
+        MsgBox wim.execQuery(xSql).count
     End If
     
 End Sub
 
-' Public Function FunctionName(ParameterList) As ReturnType
-'     Try
-        
-'     Catch ex As Exception
-'     End Try
-'     Return ReturnValue
-' End Function
-' Count app process
-' Eg: If RuningCount("cmd.exe", "") > 0
-' Eg: If RuningCount("cmd.exe", "c:\0.bat") > 1
-Public Function RuningCount(ByVal sAppName, ByVal sAppPath) 
-    On Error Resume Next
-    Dim objItem, i:    i = 0
-    For Each objItem In GetObject("winmgmts:\\.\root\cimv2").instances_
-        If LCase(objItem.Name) = LCase(sAppName) Then
-            If sAppPath = "" Or InStr(1, objItem.CommandLine, sAppPath, vbTextCompare) Then i = i + 1
-        End If
-    Next
-    RuningCount = i
+' Generate Script Name
+' @param {String} name  App name e.g. "cmd"
+' @param {String} post  App postfix with dot e.g. ".exe"
+' @return {String} App full name e.g. "cmd.exe"
+Private Function scriptName(name, post)
+    Dim r
+
+    r = Left(WScript.scriptName, InStr(WScript.scriptName, ".") - 1)
+
+    If name = "" Then 
+        r = r & post
+    Else 
+        r = name & post
+    End If
+
+    scriptName = r
 End Function
 
+Public Function processSQL(name, path)
+    Dim r
 
-' Close app process
-' Eg: Call CloseProcess("cmd.exe", "")
-' Eg: Call CloseProcess("cmd.exe", "c:\0.bat")
-Sub CloseProcess(ByVal sAppName, ByVal sAppPath)
-    On Error Resume Next
-    Dim objItem
-    For Each objItem In GetObject("winmgmts:\\.\root\cimv2").instances_
-        If LCase(objItem.Name) = LCase(sAppName) Then
-            If sAppPath = "" Or InStr(1, objItem.CommandLine, sAppPath, vbTextCompare) Then objItem.Terminate
-        End If
-    Next
-End Sub
+    r = "Select * From Win32_Process Where Name='{$1}' And CommandLine Like '%{$2}%'"
+    path = Replace(path, "\", "\\")
+    r = Replace(r, "{$1}", name)
+    r = Replace(r, "{$2}", path)
+    
+    processSQL = r
+End Function
