@@ -14,14 +14,19 @@ Sub Main(ByVal sAppName)
             Call CloseProcess(sAppName, "")
             
             ' 弹出提示
-            MsgBox "程序遇到未知问题即将关闭，请重新运行本程序", 48, "友情提示"
+            ' MsgBox "程序遇到未知问题即将关闭，请重新运行本程序", 48, "友情提示"
             
         End If
     
+    Else
+
+        ' MsgBox "程序问题", 48, "友情提示"
+        msgbox WScript
+        
     End If
     
     ' 删除自己
-    fso.DeleteFile WScript.ScriptFullName, True
+    ' fso.DeleteFile WScript.ScriptFullName, True
 
 End Sub
 
