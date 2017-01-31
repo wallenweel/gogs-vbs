@@ -20,24 +20,25 @@ argv = "web"
 ' GUI page file, path is relative to the vbs script
 html = "index.html"
 
-Dim xName, xPath, xCmd, xSql, currDir
+Dim xDir, xName, xPath, xCmd, xSql, hasRan
 
 ' Call main sub
 Main
 
 ' Main
 Sub Main
+    xDir  = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
     xName = scriptName(appName, postFix)
-    xPath = currDir & xName
-    xSql = processSQL(xName, xPath)
-    currDir = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
+    xPath = xDir & xName
+    xCmd  = xName & " " & argv
+    xSql  = processSQL(xName, xPath)
 
     If Not fso.fileExists(xPath) Then
         MsgBox "No App: [" & xName & "], Will Exit!"
     Else
-        If html = "" Then
-            Dim hasRan:hasRan = wim.execQuery(xSql).count
+        hasRan = wim.execQuery(xSql).count
 
+        If html = "" Then
             If hasRan = 1 Then
                 Dim sts
                 sts = MsgBox("HOW YOU DO?", 2, "[" & xName & "] is Running!")
@@ -52,7 +53,7 @@ Sub Main
             End If
         Else
             If autoStart = 1 Then app_start
-            Call LaunchGUI(currDir & html)
+            Call LaunchGUI(xDir & html)
         End If
     End If
     
@@ -134,11 +135,17 @@ Private Function LaunchGUI(path)
         Set startBtn = .querySelector("button#start")
         Set restartBtn = .querySelector("button#restart")
         Set stopBtn = .querySelector("button#stop")
+        Set goEntry = .querySelector("a#goEntry")
+        Set goLog = .querySelector("a#goLog")
     End With
 
     startBtn.onclick = getRef("app_start")
     restartBtn.onclick = getRef("app_restart")
     stopBtn.onclick = getRef("app_stop")
+    goEntry.onclick = getRef("app_go")
+    goLog.onclick = getRef("app_go")
+
+    If hasRan > 0 Then Call addSamp(xCmd)
         
     Do While true
         Call refreshStatus()
@@ -170,18 +177,39 @@ Public Sub event_onquit
     WScript.quit(0)
 End Sub
 
+Private Sub app_go(ev)
+    With IE.document
+        .body.className = ev.currentTarget.className
+        If .body.className = "log" Then
+            .querySelector("pre#log").innerHtml = readFile((xDir & "\readme_zh.md"), "utf-8")
+        End If
+    End With
+End Sub
+
 Private Sub app_start
-    wso.run xPath & " " & argv, 0
+    wso.run xCmd, 0
+    Call addSamp(xCmd)
 End Sub
 
 Private Sub app_restart(ev)
     Call terminateProcess(xSql, xName)
-    wso.run xPath & " " & argv, 0
+    wso.run xCmd, 0
 End Sub
 
 Private Sub app_stop
+    Call addSamp("")
     Call terminateProcess(xSql, xName)
 End Sub
+
+Private Function addSamp(str)
+    Set obj = IE.document.querySelector("blockquote.comment > code")
+    Dim old:old = obj.innerHtml
+    obj.innerHtml = "<samp>" & trim(xDir, "\") & "&gt;&nbsp;" & str & "</samp>"
+End Function
+
+Private Function trim(str, char)
+    trim = Left(str, InStrRev(str, char) - 1)
+End Function
 
 Private Function getText(url)
     Set http = CreateObject("Msxml2.ServerXMLHTTP")
