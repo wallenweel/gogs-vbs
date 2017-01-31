@@ -103,7 +103,7 @@ Private Function LaunchGUI(path)
         .toolbar = 0
         .statusbar = 0
         .width = 320
-        .height = 560
+        .height = 568
         .resizable = 0
         .silent = 0
         .navigate "about:blank"
