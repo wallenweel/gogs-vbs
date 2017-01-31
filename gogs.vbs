@@ -3,50 +3,55 @@ Set wso = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.filesystemobject")
 Set IE  = WScript.createObject("InternetExplorer.Application", "event_")
 
-Dim appName, postFix, argv, html
+Dim appName, postFix, autoStart, argv, html
 
-' Custom app Name
+' Custom app Name e.g. cmd
 appName = ""
 
 ' Custom app postfix
 postFix = ".exe"
 
+' Specified auto start app, 0|1
+autoStart = 0
+
+' Specified argv
 argv = "web"
 
+' GUI page file, path is relative to the vbs script
 html = "index.html"
 
-Dim xName, xPath, xCmd, xSql
-Dim currDir:currDir = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
+Dim xName, xPath, xCmd, xSql, currDir
 
 ' Call main sub
 Main
 
 ' Main
-Sub Main()
-
+Sub Main
     xName = scriptName(appName, postFix)
     xPath = currDir & xName
     xSql = processSQL(xName, xPath)
+    currDir = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
 
     If Not fso.fileExists(xPath) Then
         MsgBox "No App: [" & xName & "], Will Exit!"
     Else
-        Dim hasRan:hasRan = wim.execQuery(xSql).count
-        hasRan = 0
-        If hasRan = 1 Then
-            Dim sts
+        If html = "" Then
+            Dim hasRan:hasRan = wim.execQuery(xSql).count
 
-            sts = MsgBox("How do you want to do?", 2, "[" & xName & "] is Running!")
+            If hasRan = 1 Then
+                Dim sts
+                sts = MsgBox("HOW YOU DO?", 2, "[" & xName & "] is Running!")
 
-            If sts = 3 Then Call terminateProcess(xSql, xName)
-            If sts = 4 Then
-                Call terminateProcess(xSql, xName)
-                wso.run xPath & " " & argv, 0
+                If sts = 3 Then app_stop
+                If sts = 4 Then app_restart
+            ElseIf hasRan = 2 Then
+                MsgBox ""
+            Else
+                app_start
+                wso.popup "APP HAS LAUNCHED...", 5, "INFO", 0
             End If
-        ElseIf hasRan = 2 Then
-            MsgBox ""
         Else
-            ' wso.run xPath & " " & argv, 0
+            If autoStart = 1 Then app_start
             Call LaunchGUI(currDir & html)
         End If
     End If
@@ -109,13 +114,26 @@ Private Function LaunchGUI(path)
     
         .left = Fix((.document.parentwindow.screen.availwidth - .width) / 2)
         .top = Fix((.document.parentwindow.screen.availheight - .height) / 2)
-        .document.write readFile(path, "utf-8")
         .visible = 1
 
-        Set startBtn = .document.querySelector("button#start")
-        Set restartBtn = .document.querySelector("button#restart")
-        Set stopBtn = .document.querySelector("button#stop")
+    End With
 
+    With IE.document
+        If Not fso.fileExists(path) Then
+            .write "<html>"
+            .write "<body style=text-align:center;padding-top:50%;>"
+            .write "<button id=start>START</button>"
+            .write "<button id=restart>RESTART</button>"
+            .write "<button id=stop>STOP</button>"
+            .write "</body>"
+            .write "</html>"
+        Else
+            .write readFile(path, "utf-8")
+        End If
+        
+        Set startBtn = .querySelector("button#start")
+        Set restartBtn = .querySelector("button#restart")
+        Set stopBtn = .querySelector("button#stop")
     End With
 
     startBtn.onclick = getRef("app_start")
