@@ -1,7 +1,7 @@
 Set wim = GetObject("winmgmts:")
 Set wso = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.filesystemobject")
-Set IE = WScript.createObject("InternetExplorer.Application", "event_")
+Set IE  = WScript.createObject("InternetExplorer.Application", "event_")
 
 Dim appName, postFix, argv, html
 
@@ -15,13 +15,14 @@ argv = "web"
 
 html = "index.html"
 
+Dim xName, xPath, xCmd, xSql
+Dim currDir:currDir = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
+
 ' Call main sub
 Main
 
 ' Main
 Sub Main()
-    Dim xName, xPath, xCmd, xSql
-    Dim currDir:currDir = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
 
     xName = scriptName(appName, postFix)
     xPath = currDir & xName
@@ -38,7 +39,7 @@ Sub Main()
             sts = MsgBox("How do you want to do?", 2, "[" & xName & "] is Running!")
 
             If sts = 3 Then Call terminateProcess(xSql, xName)
-            If sts = 4 Then 
+            If sts = 4 Then
                 Call terminateProcess(xSql, xName)
                 wso.run xPath & " " & argv, 0
             End If
@@ -111,26 +112,57 @@ Private Function LaunchGUI(path)
         .document.write readFile(path, "utf-8")
         .visible = 1
 
-        ' Set startBtn = .document.querySelector("button#start")
-        ' Set restartBtn = .document.querySelector("button#restart")
-        ' Set stopBtn = .document.querySelector("button#stop")
+        Set startBtn = .document.querySelector("button#start")
+        Set restartBtn = .document.querySelector("button#restart")
+        Set stopBtn = .document.querySelector("button#stop")
 
-        Set win = .document.parentWindow
-        Set nodes = .document.all
-
-        nodes.stop.onclick=getref("app_stop")
     End With
 
+    startBtn.onclick = getRef("app_start")
+    restartBtn.onclick = getRef("app_restart")
+    stopBtn.onclick = getRef("app_stop")
+        
     Do While true
-        WScript.sleep 200
+        Call refreshStatus()
+        WScript.sleep 800
     Loop
 
     LaunchGUI = IE
 End Function
 
+Private Function refreshStatus()
+    Dim hasRan:hasRan = wim.execQuery(xSql).count
+    on error resume next
 
-Sub app_stop
-    IE.quit
+    Set id = IE.document.all
+
+    If hasRan = 0 Then
+        id.start.disabled = null
+        id.restart.disabled = true
+        id.stop.disabled = true
+    Else
+        id.start.disabled = true
+        id.restart.disabled = null
+        id.stop.disabled = null
+    End If
+    
+End Function
+
+Public Sub event_onquit
+    WScript.quit(0)
+End Sub
+
+Private Sub app_start
+    wso.run xPath & " " & argv, 0
+End Sub
+
+Private Sub app_restart(ev)
+    Call terminateProcess(xSql, xName)
+    wso.run xPath & " " & argv, 0
+End Sub
+
+Private Sub app_stop
+    Call terminateProcess(xSql, xName)
 End Sub
 
 Private Function getText(url)
