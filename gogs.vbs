@@ -1,6 +1,7 @@
 Set wim = GetObject("winmgmts:")
 Set wso = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.filesystemobject")
+Set IE = WScript.createObject("InternetExplorer.Application", "event_")
 
 Dim appName, postFix, argv, html
 
@@ -45,7 +46,7 @@ Sub Main()
             MsgBox ""
         Else
             ' wso.run xPath & " " & argv, 0
-            LaunchGUI(currDir & html)
+            Call LaunchGUI(currDir & html)
         End If
     End If
     
@@ -88,7 +89,7 @@ Private Function processSQL(name, path)
 End Function
 
 Private Function LaunchGUI(path)
-    Set IE = WScript.createObject("InternetExplorer.Application", "event_")
+    ' Set IE = WScript.createObject("InternetExplorer.Application", "event_")
     
     With IE
         .menubar = 0
@@ -98,10 +99,11 @@ Private Function LaunchGUI(path)
         .width = 320
         .height = 560
         .resizable = 0
+        .silent = 0
         .navigate "about:blank"
     
         Do
-            WScript.Sleep 200
+            WScript.sleep 200
         Loop Until .readyState = 4
     
         .left = Fix((.document.parentwindow.screen.availwidth - .width) / 2)
@@ -109,10 +111,27 @@ Private Function LaunchGUI(path)
         .document.write readFile(path, "utf-8")
         .visible = 1
 
+        ' Set startBtn = .document.querySelector("button#start")
+        ' Set restartBtn = .document.querySelector("button#restart")
+        ' Set stopBtn = .document.querySelector("button#stop")
+
+        Set win = .document.parentWindow
+        Set nodes = .document.all
+
+        nodes.stop.onclick=getref("app_stop")
     End With
+
+    Do While true
+        WScript.sleep 200
+    Loop
 
     LaunchGUI = IE
 End Function
+
+
+Sub app_stop
+    IE.quit
+End Sub
 
 Private Function getText(url)
     Set http = CreateObject("Msxml2.ServerXMLHTTP")

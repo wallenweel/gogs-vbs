@@ -1,10 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
+    <title>GOGS GIT</title>
+    <style>
+    body {
+        background-color: #f5f5f5;
+    }
+    button[type="button"] {
+        color: crimson;
+    }
+    button[disabled] {
+        color: gray;
+    }
+    </style>
 </head>
 <body>
-    <h1>GOGS 测试测试测试测试</h1>
+    <h1 id="title">GOGS 测试测试测试测试</h1>
+    <button type="button" disabled id="start">启动</button>
+    <button type="button" id="restart">重启</button>
+    <button type="button" id="stop">停止</button>
 </body>
 </html>
