@@ -145,6 +145,7 @@ Private Function LaunchGUI(path)
     goEntry.onclick = getRef("app_go")
     goLog.onclick = getRef("app_go")
 
+    If hasRan = 0 Then Call addSamp("")
     If hasRan > 0 Then Call addSamp(xCmd)
         
     Do While true

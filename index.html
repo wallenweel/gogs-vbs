@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="shortcut icon">
-    <title></title>
+    <title>Gogs</title>
     <style>
     
     html {
         height: 100%;
         width: 100%;
         box-sizing: border-box;
+        user-select: none;
+        -ms-user-select: none;
     }
 
     *, *::before, *::after {
         box-sizing: inherit;
-        -ms-user-select: none;
-        user-select: none;
     } 
     
     body {
@@ -61,6 +61,7 @@
         text-align: center;
         right: 10px;
         position: absolute;
+        cursor: default;
     }
 
     body.entry header > a.entry {
@@ -93,8 +94,9 @@
 
     .content.log {
         background: #2a2a2a;
-        transition: transform .25s ease;
+        transition: transform .25s ease, opacity .25s ease;
         transform: translateX(100%);
+        opacity: 0;
         margin-right: -14px;
         overflow-x: hidden;
         overflow-y: auto;
@@ -109,10 +111,12 @@
 
     body.log .content.log {
         transform: translateX(0);
+        opacity: 1
     }
 
     body.log footer.footer {
-        display: none;
+        /*display: none;*/
+        height: 0;
     }
 
     img.cover {
@@ -163,10 +167,19 @@
         /*margin-bottom: 0;*/
         padding: 8px;
     }
+    blockquote.comment > code > samp {
+        user-select: element;
+        -ms-user-select: element;
+    }
+    blockquote.comment > code > samp::selection {
+        background-color: #222;
+    }
 
     .footer {
-        flex-grow: 1;
-        max-height: 32px;
+        /*flex-grow: 1;*/
+        transition: height .25s ease;
+        overflow: hidden;
+        height: 32px;
         line-height: 32px;
         font-size: 12px;
         color: #777;
