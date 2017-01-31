@@ -30,11 +30,11 @@ Sub Main()
         MsgBox "No App: [" & xName & "], Will Exit!"
     Else
         Dim hasRan:hasRan = wim.execQuery(xSql).count
-        ' hasRan = 0
+        hasRan = 0
         If hasRan = 1 Then
             Dim sts
 
-            sts = MsgBox("[" & xName & "] is Running!", 2, "How do you want to do?")
+            sts = MsgBox("How do you want to do?", 2, "[" & xName & "] is Running!")
 
             If sts = 3 Then Call terminateProcess(xSql, xName)
             If sts = 4 Then 
@@ -44,8 +44,8 @@ Sub Main()
         ElseIf hasRan = 2 Then
             MsgBox ""
         Else
-            wso.run xPath & " " & argv, 0
-            ' LaunchGUI(currDir & html)
+            ' wso.run xPath & " " & argv, 0
+            LaunchGUI(currDir & html)
         End If
     End If
     
@@ -65,7 +65,6 @@ End Function
 ' @return {String} App full name e.g. "cmd.exe"
 Private Function scriptName(name, post)
     Dim r
-
     r = Left(WScript.scriptName, InStr(WScript.scriptName, ".") - 1)
 
     If name = "" Then 
@@ -80,9 +79,7 @@ End Function
 ' Generate Process SQL
 Private Function processSQL(name, path)
     Dim r
-
-    r = "Select * From Win32_Process Where Name='{$1}'"
-    ' r = "Select * From Win32_Process Where Name='{$1}' And CommandLine Like '%{$2}%'"
+    r = "Select * From Win32_Process Where Name='{$1}'" ' And CommandLine Like '%{$2}%'"
     ' path = Replace(path, "\", "\\")
     ' r = Replace(r, "{$2}", path)
     r = Replace(r, "{$1}", name)
@@ -93,41 +90,70 @@ End Function
 Private Function LaunchGUI(path)
     Set IE = WScript.createObject("InternetExplorer.Application", "event_")
     
-    IE.menubar = 0
-    IE.addressbar = 0
-    IE.toolbar = 0
-    IE.statusbar = 0
-    IE.width = 400
-    IE.height = 400
-    IE.resizable = 0
-    ' IE.navigate "http://www.baidu.com"
-    ' IE.navigate "file://" & path
-    IE.navigate "about:blank"
+    With IE
+        .menubar = 0
+        .addressbar = 0
+        .toolbar = 0
+        .statusbar = 0
+        .width = 320
+        .height = 560
+        .resizable = 0
+        .navigate "about:blank"
     
-    Do  
-        WScript.Sleep 200  
-    Loop Until IE.readyState = 4
-
-    IE.left = Fix((IE.document.parentwindow.screen.availwidth - IE.width) / 2)
-    IE.top = Fix((IE.document.parentwindow.screen.availheight - IE.height) / 2)
-    IE.visible = 1
-
-    ' Set http = CreateObject("Msxml2.ServerXMLHTTP")
-    ' http.open "GET" path, False
-    ' http.send
-    ' sHtml = http.responseText
-
-    IE.document.write sHtml
+        Do
+            WScript.Sleep 200
+        Loop Until .readyState = 4
     
-    MsgBox IE.document
+        .left = Fix((.document.parentwindow.screen.availwidth - .width) / 2)
+        .top = Fix((.document.parentwindow.screen.availheight - .height) / 2)
+        .document.write readFile(path, "utf-8")
+        .visible = 1
 
-    ' Dim stuff
-    ' Set fso = CreateObject("Scripting.filesystemobject")
-    ' Set file = fso.openTextFile(path)
-    ' stuff = file.readAll
-    ' IE.document.write stuff
-    ' file.close
-    
+    End With
 
     LaunchGUI = IE
+End Function
+
+Private Function getText(url)
+    Set http = CreateObject("Msxml2.ServerXMLHTTP")
+
+    http.open "GET", url, False
+    http.send
+    
+    getText = http.responseText
+End Function
+
+Private Function readFile(path, charset)
+    Dim Str
+    Set Stuff = CreateObject("ADODB.Stream")
+
+    With Stuff
+        .type = 2
+        .mode = 3
+        .charset = charset
+        .open
+        .loadFromFile path
+
+        Str = .readtext
+
+        .close
+    End With
+    Set Stuff = Nothing
+
+    ReadFile = Str
+End Function
+
+Private Function writeFile (content, file, charset)
+    Set Stuff = CreateObject("ADODB.Stream")
+    With Stuff
+        .type = 2
+        .mode = 3
+        .charSet = charset
+        .open
+        .writeText content
+        .saveToFile file, 2
+        .flush
+        .close
+    End With
+    Set Stuff = Nothing
 End Function
