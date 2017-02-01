@@ -3,17 +3,9 @@ Set wso = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.filesystemobject")
 Set IE  = WScript.createObject("InternetExplorer.Application", "event_")
 
-' wso.regWrite "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\"&scriptName("", "\"), WScript.ScriptFullName, "REG_SZ"
-' WScript.echo wso.regRead("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\MouseDriver")
-' Dim AutoRunProgram
-' Set AutoRunProgram = WScript.CreateObject("WScript.shell")
-' RegPath ="HKLM\Software\Microsoft\Windows\CurrentVersion\Run\"
-' Type_Name = "REG_SZ"
-' Key_Name = "test\"
-' Key_data = "C:\******.vbs"
-' AutorunProgram.RegWrite regpath&Key_Name,Key_data,Type_Name
-
-' WScript.quit
+wso.regWrite "HKCU\Software\aa\auto", "1"
+WScript.quit
+' ---------------------------------------------------------------------------------------------------------- '
 
 Dim appName, postFix, autoStart, argv, html
 
@@ -32,7 +24,10 @@ argv = "web"
 ' GUI page file, path is relative to the vbs script
 html = "index.html"
 
+' ---------------------------------------------------------------------------------------------------------- '
+
 Dim xDir, xName, xPath, xCmd, xSql, hasRan
+Dim reg_run, reg_app
 
 ' Call main sub
 Main
@@ -44,6 +39,8 @@ Sub Main
     xPath = xDir & xName
     xCmd  = xName & " " & argv
     xSql  = processSQL(xName, xPath)
+
+    reg_run = "HKCU\Software\Microsoft\Windows\CurrentVersion\Run\"
 
     If Not fso.fileExists(xPath) Then
         MsgBox "No App: [" & xName & "], Will Exit!"
