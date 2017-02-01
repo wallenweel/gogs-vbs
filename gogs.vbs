@@ -1,13 +1,14 @@
 Set wim = GetObject("winmgmts:")
 Set wso = CreateObject("WScript.Shell")
+Set wsnet = CreateObject("WScript.Network")
 Set fso = CreateObject("Scripting.filesystemobject")
 Set IE  = WScript.createObject("InternetExplorer.Application", "event_")
 
-wso.regWrite "HKCU\Software\aa\auto", "1"
-WScript.quit
+' wso.regWrite "HKCU\Software\aa\auto", "1"
+' WScript.quit
 ' ---------------------------------------------------------------------------------------------------------- '
 
-Dim appName, postFix, autoStart, argv, html
+Dim appName, postFix, autoRun, argv, html
 
 ' Custom app Name e.g. cmd
 appName = ""
@@ -16,7 +17,7 @@ appName = ""
 postFix = ".exe"
 
 ' Specified auto start app, 0|1
-autoStart = 0
+autoRun = 1
 
 ' Specified argv
 argv = "web"
@@ -26,8 +27,8 @@ html = "index.html"
 
 ' ---------------------------------------------------------------------------------------------------------- '
 
-Dim xDir, xName, xPath, xCmd, xSql, hasRan
-Dim reg_run, reg_app
+Dim xDir, xName, xFullName, xPath, xCmd, xSql, hasRan
+Dim reg_run, reg_run_app, reg_app
 
 ' Call main sub
 Main
@@ -35,22 +36,25 @@ Main
 ' Main
 Sub Main
     xDir  = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
-    xName = scriptName(appName, postFix)
-    xPath = xDir & xName
-    xCmd  = xName & " " & argv
-    xSql  = processSQL(xName, xPath)
+    xName = scriptName(appName, "")
+    xFullName = scriptName(appName, postFix)
+    xPath = xDir & xFullName
+    xCmd  = xFullName & " " & argv
+    xSql  = processSQL(xFullName, xPath)
 
     reg_run = "HKCU\Software\Microsoft\Windows\CurrentVersion\Run\"
+    ' MsgBox wso.regRead(reg_run&"wox")
+    ' wso.regWrite reg_run & xName, ""
 
     If Not fso.fileExists(xPath) Then
-        MsgBox "No App: [" & xName & "], Will Exit!"
+        MsgBox "No App: [" & xFullName & "], Will Exit!"
     Else
         hasRan = wim.execQuery(xSql).count
 
         If html = "" Then
             If hasRan = 1 Then
                 Dim sts
-                sts = MsgBox("HOW YOU DO?", 2, "[" & xName & "] is Running!")
+                sts = MsgBox("HOW YOU DO?", 2, "[" & xFullName & "] is Running!")
 
                 If sts = 3 Then app_stop
                 If sts = 4 Then app_restart
@@ -61,8 +65,8 @@ Sub Main
                 wso.popup "APP HAS LAUNCHED...", 5, "INFO", 0
             End If
         Else
-            If autoStart = 1 Then app_start
             Call LaunchGUI(xDir & html)
+            If autoRun = 1 Then app_start
         End If
     End If
     
@@ -139,28 +143,43 @@ Private Function LaunchGUI(path)
             .write "</html>"
         Else
             .write readFile(path, "utf-8")
+
+            .querySelector(".container.drawer .header-block .-user").innerHTML = wsnet.username
+
+            Set startBtn = .querySelector("button#start")
+            Set restartBtn = .querySelector("button#restart")
+            Set stopBtn = .querySelector("button#stop")
+            Set drawerBtn = .querySelector("button#drawer")
+            ' Set goEntry = .querySelector("a#goEntry")
+            ' Set goLog = .querySelector("a#goLog")
+
+            Set startupBtn = .querySelector(".-checkbox #startup")
+            
+            on error resume next
+            reg_run_app = wso.regRead(reg_run & xName)
+            If Err.number <> 0 Then
+            Else
+                If reg_run_app = WScript.ScriptFullName Then startupBtn.checked = true
+            End If
+
+            startBtn.onclick = getRef("app_start")
+            restartBtn.onclick = getRef("app_restart")
+            stopBtn.onclick = getRef("app_stop")
+            ' goEntry.onclick = getRef("app_go")
+            ' goLog.onclick = getRef("app_go")
+
+            startupBtn.onclick = getRef("app_option")
+
+            If hasRan = 0 Then Call addSamp("")
+            If hasRan > 0 Then Call addSamp(xCmd)
+                
+            Do While true
+                Call refreshStatus()
+                WScript.sleep 800
+            Loop
         End If
         
-        Set startBtn = .querySelector("button#start")
-        Set restartBtn = .querySelector("button#restart")
-        Set stopBtn = .querySelector("button#stop")
-        Set goEntry = .querySelector("a#goEntry")
-        Set goLog = .querySelector("a#goLog")
     End With
-
-    startBtn.onclick = getRef("app_start")
-    restartBtn.onclick = getRef("app_restart")
-    stopBtn.onclick = getRef("app_stop")
-    goEntry.onclick = getRef("app_go")
-    goLog.onclick = getRef("app_go")
-
-    If hasRan = 0 Then Call addSamp("")
-    If hasRan > 0 Then Call addSamp(xCmd)
-        
-    Do While true
-        Call refreshStatus()
-        WScript.sleep 800
-    Loop
 
     LaunchGUI = IE
 End Function
@@ -187,6 +206,26 @@ Public Sub event_onquit
     WScript.quit(0)
 End Sub
 
+Private Sub app_option(ev)
+    Dim id:id = ev.currentTarget.id
+    
+    With IE.document
+        If id = "startup" Then
+            on error resume next
+            reg_run_app = wso.regRead(reg_run & xName)
+            If Err.number <> 0 Then
+                wso.regWrite reg_run & xName, WScript.ScriptFullName
+                .querySelector(".-checkbox #startup").checked = true
+            Else
+                If reg_run_app = WScript.ScriptFullName Then
+                    wso.regDelete reg_run & xName
+                    .querySelector(".-checkbox #startup").checked = null
+                End If
+            End If
+        End If
+    End With
+End Sub
+
 Private Sub app_go(ev)
     With IE.document
         .body.className = ev.currentTarget.className
@@ -202,13 +241,13 @@ Private Sub app_start
 End Sub
 
 Private Sub app_restart(ev)
-    Call terminateProcess(xSql, xName)
+    Call terminateProcess(xSql, xFullName)
     wso.run xCmd, 0
 End Sub
 
 Private Sub app_stop
     Call addSamp("")
-    Call terminateProcess(xSql, xName)
+    Call terminateProcess(xSql, xFullName)
 End Sub
 
 Private Function addSamp(str)

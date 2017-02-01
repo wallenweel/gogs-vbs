@@ -6,6 +6,55 @@
     <link rel="shortcut icon">
     <title>Gogs</title>
     <style>
+    @font-face {
+        font-family: 'gogs';
+        src: url(data:application/font-ttf;charset=utf-8;base64,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) format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    [class^="icon-"], [class*=" icon-"] {
+        /* use !important to prevent issues with browser extensions that change fonts */
+        font-family: 'gogs' !important;
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+
+        /* Better Font Rendering =========== */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .icon-add:before {
+        content: "\e145";
+    }
+    .icon-arrow_back:before {
+        content: "\e5c4";
+    }
+    .icon-check:before {
+        content: "\e5ca";
+    }
+    .icon-close:before {
+        content: "\e5cd";
+    }
+    .icon-menu:before {
+        content: "\e5d2";
+    }
+    .icon-more_horiz:before {
+        content: "\e5d3";
+    }
+    .icon-more_vert:before {
+        content: "\e5d4";
+    }
+    .icon-settings:before {
+        content: "\e8b8";
+    }
+
+    </style>
+    <style>
     
     html {
         height: 100%;
@@ -25,11 +74,73 @@
         font-family: Microsoft Yahei;
         padding: 0;
         margin: 0;
-        flex-direction: column;
-        align-items: center;
-        display: flex;
+        overflow: hidden;
     }
-    
+
+    .container {
+        height: 100%;
+        width: 100%;
+        flex-direction: column;
+        /*align-items: center;*/
+        display: flex;
+        position: relative;
+        z-index: 1;
+    }
+    .container.main {
+        align-items: center;
+    }
+    .container.mask,
+    .container.drawer {
+        position: absolute;
+        top: 0;
+    }
+    body.-drawer .container.drawer {
+        transform: translateX(0);
+    }
+    body.-drawer .container.mask {
+        visibility: visible;
+        opacity: 1;
+    }
+    .container.drawer {
+        transition: transform .25s ease-in-out;
+        z-index: 11;
+        /*justify-content: center;*/
+        background-color: #fff;
+        width: 240px;
+        transform: translateX(-100%);
+        color: #555;
+    }
+    .container.drawer .header-block {
+        background-color: #eee;
+        padding: 24px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+    .container.drawer .header-block > .-logo {
+        background-color: #fff;
+        height: 56px;
+        width: 56px;
+        border: 8px solid #fff;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+    .container.drawer .header-block > .-logo > img {
+        max-width: 100%;
+        height: auto;
+    }
+    .container.drawer .settings-block {
+        padding-top: 24px;
+    }
+
+    .container.mask {
+        transition: opacity .25s ease;
+        background-color: rgba(0, 0, 0, 0.24);
+        z-index: 5;
+        opacity: 0;
+        visibility: hidden;
+    }
+
     header {
         box-shadow: 0 4px 6px rgba(100, 100, 100, .125);
         background-color: #fff;
@@ -40,9 +151,8 @@
         z-index: 10;
         position: relative;
         display: flex;
-        padding: 0 16px;
-        /*align-items: center;*/
-        /*line-height: 48px;*/
+        padding: 0 4px;
+        align-items: center;
     }
     header > h1 {
         flex-grow: 2;
@@ -50,26 +160,51 @@
         font-weight: normal;
         margin: 0;
         color: #555;
+        padding: 0 8px;
     }
+    header > button,
     header > a {
-        text-decoration: none;
-        color: #aaa;
-        transition: transform .25s ease;
-        transform: scale(1);
+        background: none;
         width: 48px;
         height: 48px;
+        color: #aaa;
+        border: none;
+        outline: none;
+        text-decoration: none;
         text-align: center;
-        right: 10px;
-        position: absolute;
+        line-height: 48px;
         cursor: default;
     }
+    header > button {
+        font-size: 24px;
+    }
+    header > button:focus {
+        background-color: #eee;
+    }
 
-    body.entry header > a.entry {
+    header > a.settings {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    /*header > a.entry,*/
+    header > a.log {
+        transition: transform .25s ease, width .25s;
         transform: scale(0);
+        width: 0;
+        right: 10px;
+        top: 0;
+        /*position: absolute;*/
+    }
+
+    body.log header > a.entry {
+        transform: scale(0);
+        width: 0;
     }
 
     body.log header > a.log {
-        transform: scale(0);
+        transform: scale(1);
+        width: 48px;
     }
 
     main {
@@ -111,7 +246,7 @@
 
     body.log .content.log {
         transform: translateX(0);
-        opacity: 1
+        opacity: 1;
     }
 
     body.log footer.footer {
@@ -125,7 +260,7 @@
         height: auto;
     }
 
-    button[type="button"] {
+    .content.entry button[type="button"] {
         width: 100%;
         transition: all .25s ease;
         border: 0;
@@ -139,12 +274,12 @@
         color: #fff;
         position: relative;
     }
-    button[disabled] {
+    .content.entry button[disabled] {
         color: #aaa;
         background-color: #ddd;
         box-shadow: 0 1px 1px rgba(100, 100, 100, .35);
     }
-    button[type="button"]::after {
+    .content.entry button[type="button"]::after {
         /*content: attr(tip);*/
         font-size: 12px;
         background-color: #222;
@@ -197,51 +332,128 @@
             opacity: 0;
         }
     }
-    
+        
+    .settings-block .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 48px;
+        padding: 0 16px;
+        font-size: 14px;
+    }
+    .-checkbox {
+        position: relative;
+        /*display: flex;*/
+    }
+    input[type="checkbox"] {
+        display: block;
+        height: 12px;
+        width: 32px;
+        position: relative;
+        z-index: 1;
+        opacity: 0;
+    }
+    input[type="checkbox"] + i {
+        border-radius: 2px;
+        background-color: #ccc;
+        height: 2px;
+        width: 32px;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        display: flex;
+        align-items: center;
+    }
+    /*input[type="checkbox"] + i::before,*/
+    input[type="checkbox"] + i::after {
+        content: "";
+        display: block;
+        height: 16px;
+        width: 16px;
+        background-color: #999;
+        border-radius: 50%;
+        transform: translateX(0%);
+        transition: all .25s ease;
+        box-shadow: 0 1px 1px rgba(100, 100, 100, .35);
+    }
+    input[type="checkbox"]:checked + i::after {
+        transform: translateX(100%);
+        background-color: #00a4ff;
+    }
     </style>
 </head>
-<body class="entry">
-    <header class="header">
-        <h1>Gogs 控制面板</h1>
-        <a id="goEntry" class="entry">返回</a>
-        <a id="goLog" class="log">日志</a>
-    </header>
+<body class="">
+    <div class="container main">
+        <header class="header">
+            <button id="drawer" class="settings icon-settings" type="button"></button>
+            <h1>Gogs 控制面板</h1>
+            <!--<a id="goEntry" class="entry">返回</a>-->
+            <!--<a id="goLog" class="log">日志</a>-->
+        </header>
 
-    <main>
-        <div class="content entry">
-            <img class="cover"/>
-            
-            <button id="start" type="button" tip="启动程序">开始</button>
-            <button id="restart" type="button">重启</button>
-            <button id="stop" type="button">停止</button>
-            
-            <blockquote class="comment">
-                终端<br>
-                <code>c:\&gt;</code>
-                <samp>|</samp>
-            </blockquote>
+        <main>
+            <div class="content entry">
+                <img class="cover"/>
+                
+                <button id="start" type="button" tip="启动程序">开始</button>
+                <button id="restart" type="button">重启</button>
+                <button id="stop" type="button">停止</button>
+                
+                <blockquote class="comment">
+                    终端<br>
+                    <code>c:\&gt;</code>
+                    <samp>|</samp>
+                </blockquote>
 
+            </div>
+
+            <div class="content log">
+                <pre id="log"></pre>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <span>Powered By Gogs 2017</span>
+        </footer>
+    </div>
+
+    <div class="container drawer">
+        <div class="header-block">
+            <div class="-logo">
+                <img>
+            </div>
+            <div class="-user">username</div>
         </div>
-
-        <div class="content log">
-            <pre id="log"></pre>
+        <div class="settings-block">
+            <a class="row" title="系统启动时启动脚本">开机启动<span class="-checkbox"><input type="checkbox" id="startup"><i></i></span></a>
+            <a class="row" title="运行脚本时自动开始程序，默认自动">自动开始(未完成)<span class="-checkbox"><input type="checkbox" checked id="autorun"><i></i></span></a>
+            <a class="row" title="启动脚本时就打开这个界面">启动时打开(未完成)<span class="-checkbox"><input type="checkbox" id="open"><i></i></span></a>
         </div>
-    </main>
+    </div>
 
-    <footer class="footer">
-        <span>Powered By Gogs 2017</span>
-    </footer>
+    <div class="container mask"></div>
 
     <script>
     (function (src) {
         document.querySelector('link[rel*="icon"]').href = src.icon
         document.querySelector('img.cover').src = src.cover
+        document.querySelector('.drawer .header-block .-logo > img').src = src.icon
 
-        document.querySelectorAll('header > a').forEach(function (elem) {
-            elem.addEventListener('click', function (ev) {
-                var cls = ev.currentTarget.className;
-                document.body.className = cls
-            });
+        // document.querySelectorAll('header > a').forEach(function (elem) {
+        //     elem.addEventListener('click', function (ev) {
+        //         var cls = ev.currentTarget.className;
+        //         // document.body.className = cls
+        //         document.body.classList.toggle('log')
+        //     });
+        // });
+
+        document.querySelector('button#drawer').addEventListener('click', function (ev) {
+            document.body.classList.toggle('-drawer');
+        });
+
+        document.querySelector('.container.mask').addEventListener('click', function (ev) {
+            document.body.classList.remove('-drawer');
         });
     })({
         // Favico of page
