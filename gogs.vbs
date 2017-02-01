@@ -65,8 +65,9 @@ Sub Main
                 wso.popup "APP HAS LAUNCHED...", 5, "INFO", 0
             End If
         Else
+            If autoRun = 1 Then wso.run xCmd, 0
             Call LaunchGUI(xDir & html)
-            If autoRun = 1 Then app_start
+            Call addSamp(xCmd)
         End If
     End If
     
