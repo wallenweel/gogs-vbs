@@ -3,6 +3,18 @@ Set wso = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.filesystemobject")
 Set IE  = WScript.createObject("InternetExplorer.Application", "event_")
 
+' wso.regWrite "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\"&scriptName("", "\"), WScript.ScriptFullName, "REG_SZ"
+' WScript.echo wso.regRead("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\MouseDriver")
+' Dim AutoRunProgram
+' Set AutoRunProgram = WScript.CreateObject("WScript.shell")
+' RegPath ="HKLM\Software\Microsoft\Windows\CurrentVersion\Run\"
+' Type_Name = "REG_SZ"
+' Key_Name = "test\"
+' Key_data = "C:\******.vbs"
+' AutorunProgram.RegWrite regpath&Key_Name,Key_data,Type_Name
+
+' WScript.quit
+
 Dim appName, postFix, autoStart, argv, html
 
 ' Custom app Name e.g. cmd
